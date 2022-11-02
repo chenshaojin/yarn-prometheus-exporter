@@ -6,6 +6,10 @@ Export YARN metrics in [Prometheus](https://prometheus.io/) format.
 
 Requires [Go](https://golang.org/doc/install). Tested with Go 1.9+.
 
+
+    # CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build/install main.go
+    # CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build/install main.go
+    # CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build/install main.go
     go get
     go build -o yarn-prometheus-exporter .
 
