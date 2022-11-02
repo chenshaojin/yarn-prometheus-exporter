@@ -36,8 +36,8 @@ func loadEnv() {
 	addr = getEnvOr("YARN_PROMETHEUS_LISTEN_ADDR", ":9113")
 
 	scheme := getEnvOr("YARN_PROMETHEUS_ENDPOINT_SCHEME", "http")
-	host := getEnvOr("YARN_PROMETHEUS_ENDPOINT_HOST", "172.20.25.140")
-	port := getEnvOr("YARN_PROMETHEUS_ENDPOINT_PORT", "5004")
+	host := getEnvOr("YARN_PROMETHEUS_ENDPOINT_HOST", "localhost")
+	port := getEnvOr("YARN_PROMETHEUS_ENDPOINT_PORT", "8088")
 	clusterPath := getEnvOr("YARN_CLUSTER_PROMETHEUS_ENDPOINT_PATH", "ws/v1/cluster/metrics")
 	appsPath := getEnvOr("YARN_APPS_PROMETHEUS_ENDPOINT_PATH", "ws/v1/cluster/apps")
 	schedulerPath := getEnvOr("YARN_SCHEDULER_PROMETHEUS_ENDPOINT_PATH", "ws/v1/cluster/scheduler")
