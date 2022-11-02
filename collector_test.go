@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"testing"
+	"yarn-prometheus-exporter/yarn"
 )
 
 func TestDecodeJSON(t *testing.T) {
@@ -12,7 +13,7 @@ func TestDecodeJSON(t *testing.T) {
 		t.Error(err)
 	}
 
-	var c clusterMetrics
+	var c yarn.Cluster
 	err = json.NewDecoder(jsonFile).Decode(&c)
 	if err != nil {
 		t.Error(err)

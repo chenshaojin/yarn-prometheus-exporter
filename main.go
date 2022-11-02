@@ -5,43 +5,58 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"yarn-prometheus-exporter/yarn"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
-	addr     string
-	endpoint *url.URL
+	addr string
+	cep  *url.URL
+	aep  *url.URL
+	sep  *url.URL
 )
 
 func main() {
 	loadEnv()
+	c := yarn.NewClusterCollector(cep)
+	s := yarn.NewSchedulerCollector(sep)
+	a := yarn.NewAppsCollector(aep)
 
-	c := newCollector(endpoint)
-	err := prometheus.Register(c)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	http.Handle("/metrics", promhttp.Handler())
+	registry := prometheus.NewRegistry()
+	registry.MustRegister(c, s, a)
+	log.Println("监控服务已启动...")
+	http.Handle("/metrics", promhttp.HandlerFor(registry, promhttp.HandlerOpts{Registry: registry}))
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
 
 func loadEnv() {
+	log.Println("env 加载中...")
 	addr = getEnvOr("YARN_PROMETHEUS_LISTEN_ADDR", ":9113")
 
 	scheme := getEnvOr("YARN_PROMETHEUS_ENDPOINT_SCHEME", "http")
-	host := getEnvOr("YARN_PROMETHEUS_ENDPOINT_HOST", "localhost")
-	port := getEnvOr("YARN_PROMETHEUS_ENDPOINT_PORT", "8088")
-	path := getEnvOr("YARN_PROMETHEUS_ENDPOINT_PATH", "ws/v1/cluster/metrics")
+	host := getEnvOr("YARN_PROMETHEUS_ENDPOINT_HOST", "172.20.25.140")
+	port := getEnvOr("YARN_PROMETHEUS_ENDPOINT_PORT", "5004")
+	clusterPath := getEnvOr("YARN_CLUSTER_PROMETHEUS_ENDPOINT_PATH", "ws/v1/cluster/metrics")
+	appsPath := getEnvOr("YARN_APPS_PROMETHEUS_ENDPOINT_PATH", "ws/v1/cluster/apps")
+	schedulerPath := getEnvOr("YARN_SCHEDULER_PROMETHEUS_ENDPOINT_PATH", "ws/v1/cluster/scheduler")
 
-	e, err := url.Parse(scheme + "://" + host + ":" + port + "/" + path)
+	clusterUrl := scheme + "://" + host + ":" + port + "/" + clusterPath
+	appsUrl := scheme + "://" + host + ":" + port + "/" + appsPath
+	schedulerUrl := scheme + "://" + host + ":" + port + "/" + schedulerPath
+
+	clusterEP, err := url.Parse(clusterUrl)
+	appsEP, err := url.Parse(appsUrl)
+	schedulerEP, err := url.Parse(schedulerUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	endpoint = e
+	cep = clusterEP
+	aep = appsEP
+	sep = schedulerEP
+	log.Println("env 加载完成...")
 }
 
 func getEnvOr(key string, defaultValue string) string {

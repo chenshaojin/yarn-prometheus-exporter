@@ -1,4 +1,4 @@
-module gitlab.pbwdev.com/backend/monitoring/yarn-prometheus-exporter
+module yarn-prometheus-exporter
 
 go 1.17
 

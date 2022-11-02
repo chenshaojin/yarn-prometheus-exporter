@@ -17,7 +17,9 @@ The exporter can be configured using environment variables. These are the defaul
     YARN_PROMETHEUS_ENDPOINT_SCHEME=http
     YARN_PROMETHEUS_ENDPOINT_HOST=localhost
     YARN_PROMETHEUS_ENDPOINT_PORT=8088
-    YARN_PROMETHEUS_ENDPOINT_PATH=ws/v1/cluster/metrics
+    YARN_APPS_PROMETHEUS_ENDPOINT_PATH=ws/v1/cluster/apps
+    YARN_CLUSTER_PROMETHEUS_ENDPOINT_PATH=ws/v1/cluster/metrics
+    YARN_SCHEDULER_PROMETHEUS_ENDPOINT_PATH=ws/v1/cluster/scheduler
 
 Run the exporter:
 
