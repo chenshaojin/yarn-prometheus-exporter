@@ -2,10 +2,17 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/jeanphorn/log4go"
 	"os"
 	"testing"
 	"yarn-prometheus-exporter/yarn"
 )
+
+func TestLogJSON(t *testing.T) {
+	log4go.LoadConfiguration("log4go.json", "json")
+	log4go.LOGGER("TestRotate").Info("test")
+	log4go.Close()
+}
 
 func TestDecodeJSON(t *testing.T) {
 	jsonFile, err := os.Open("example_metrics.json")

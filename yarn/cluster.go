@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	log2 "yarn-prometheus-exporter/logger"
 )
 
 func (cc *ClusterCollector) labels() []string {
@@ -112,9 +113,18 @@ func (cc *ClusterCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- cc.ScrapeFailures
 }
 
+func (cc *ClusterCollector) metrics2File(c *metrics) {
+	jsonMetrics, err := json.Marshal(c)
+	if err != nil {
+		log.Println("json 解析失败！！")
+	}
+	log2.Info(string(jsonMetrics))
+}
+
 func (cc *ClusterCollector) Collect(ch chan<- prometheus.Metric) {
 	up := 1.0
 	metrics, err := cc.fetch(cc.ClusterEndpoint)
+	cc.metrics2File(metrics)
 	labelValues := make([]string, 0, len(cc.labels()))
 	labelValues = append(labelValues)
 	if err != nil {

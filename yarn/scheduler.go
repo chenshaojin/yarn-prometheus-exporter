@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	log2 "yarn-prometheus-exporter/logger"
 )
 
 type queueMetrics struct {
@@ -64,6 +65,14 @@ type SchedulerCollector struct {
 	ResourcesUsedVCores  *prometheus.Desc
 }
 
+func (sc *SchedulerCollector) metrics2File(q *queue) {
+	jsonMetrics, err := json.Marshal(q)
+	if err != nil {
+		log.Println("json 解析失败！！")
+	}
+	log2.Info(string(jsonMetrics))
+}
+
 func (sc *SchedulerCollector) Collect(ch chan<- prometheus.Metric) {
 	// 访问请求接口
 	metrics, err := sc.fetch(sc.SchedulerEndpoint)
@@ -72,6 +81,7 @@ func (sc *SchedulerCollector) Collect(ch chan<- prometheus.Metric) {
 		return
 	}
 	for _, a := range metrics {
+		sc.metrics2File(a)
 		labelValues := make([]string, 0, len(sc.labels()))
 		labelValues = append(labelValues, a.QueueName, a.Type)
 		ch <- prometheus.MustNewConstMetric(sc.Capacity, prometheus.GaugeValue, a.Capacity, labelValues...)

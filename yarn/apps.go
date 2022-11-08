@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	log2 "yarn-prometheus-exporter/logger"
 )
 
 /**
@@ -50,6 +51,19 @@ func (ac *ApplicationCollector) labels() []string {
 	return append(labels, "id", "user", "name", "queue", "state", "finalStatus", "applicationType", "applicationTags")
 }
 
+func (ac *ApplicationCollector) metrics() []string {
+	var labels []string
+	return append(labels,
+		"elapsedTime",
+		"allocatedMB",
+		"allocatedVCores",
+		"runningContainers",
+		"memorySeconds",
+		"vcoreSeconds",
+		"queueUsagePercentage",
+		"clusterUsagePercentage")
+}
+
 type ApplicationCollector struct {
 	ApplicationEndpoint    *url.URL
 	ElapsedTime            *prometheus.Desc
@@ -73,6 +87,7 @@ func (ac *ApplicationCollector) Collect(ch chan<- prometheus.Metric) {
 		return
 	}
 	for _, a := range metrics {
+		ac.metrics2File(a)
 		labelValues := make([]string, 0, len(ac.labels()))
 		labelValues = append(labelValues, a.Id, a.User, a.Name, a.Queue, a.State, a.FinalStatus, a.ApplicationType, a.ApplicationTags)
 		ch <- prometheus.MustNewConstMetric(ac.ElapsedTime, prometheus.GaugeValue, float64(a.ElapsedTime), labelValues...)
@@ -85,6 +100,14 @@ func (ac *ApplicationCollector) Collect(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(ac.ClusterUsagePercentage, prometheus.GaugeValue, a.ClusterUsagePercentage, labelValues...)
 	}
 
+}
+
+func (ac *ApplicationCollector) metrics2File(a *application) {
+	jsonMetrics, err := json.Marshal(a)
+	if err != nil {
+		log.Println("json 解析失败！！")
+	}
+	log2.Info(string(jsonMetrics))
 }
 
 /**

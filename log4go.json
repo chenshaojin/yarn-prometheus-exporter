@@ -1,0 +1,33 @@
+{
+  "console": {
+    "enable": false,
+    "level": "INFO",
+    "category": "console"
+  },
+  "files": [{
+    "enable": false,
+    "level": "DEBUG",
+    "filename":"./test.log",
+    "category": "Test",
+    "pattern": "[%D %T] [%C] [%L] (%S) %M"
+  },{
+    "enable": true,
+    "level": "INFO",
+    "filename":"yarn_metric.log",
+    "category": "metric",
+    "pattern": "[%D %T] [%C] [%L]: %M",
+    "rotate": true,
+    "maxsize": "50M",
+    "maxlines": "10k",
+    "daily": false,
+    "sanitize": true
+  }],
+  "sockets": [{
+    "enable": false,
+    "level": "DEBUG",
+    "category": "TestSocket",
+    "pattern": "[%D %T] [%C] [%L] (%S) %M",
+    "addr": "127.0.0.1:12124",
+    "protocol":"udp"
+  }]
+}
